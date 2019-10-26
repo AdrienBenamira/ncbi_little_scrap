@@ -2,3 +2,8 @@ config/config.yaml
 config/*.txt
 results/
 utils/__pycache__/
+v
+inputs/
+outputs/
+parameters_to_configure/
+.DS_Store

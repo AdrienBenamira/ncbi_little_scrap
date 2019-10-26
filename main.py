@@ -13,7 +13,7 @@ import time
 config = config()
 
 with open(config.path) as file:
-    file_contents = file.read()
+    file_contents = file.read().replace('\u2028',' ')
 
 with open(config.path_label) as file2:
     file_label = file2.read()
@@ -88,7 +88,7 @@ for index_fiche in range(all_index_fiche):
         (name_surname, name, surname, poste) = get_name_surname_both_poste(fiche)
         print(name_surname, name, surname, poste)
         #démarrage filtrage label TODO : a mettre dans une fonction à part
-        labels_all = get_labels(fiche)
+        labels_all = get_labels(config, fiche)
         labels_all_liste_split = labels_all.split('"' )
         labels_all_liste_split2 = [x for x in labels_all_liste_split if len(x) > 2]
         compteur_label_2 = 0

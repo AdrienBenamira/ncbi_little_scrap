@@ -18,3 +18,4 @@ threshold_label: 0.75 #ratio de labels à garder : 1 sur 3 tu gardes, 1 sur 5 po
 temps_dodo: 5 # temps de pause pour requête ncbi
 threshold_ville: 1 # nombre de lettre qui diffère entre 2 villes
 threshold_nom: 2 # nombre de lettre qui diffère entre 2 noms
+balise_split_end_label: Data

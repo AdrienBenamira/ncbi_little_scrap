@@ -40,10 +40,10 @@ def get_name_surname_both_poste(fiche):
         poste += " "
     return (name_surname, name, surname, poste)
 
-def get_labels(fiche):
-    labels_start = fiche.split("\nProfile labels:")
+def get_labels(config, fiche):
+    labels_start = fiche.split("Profile labels:")
     if len(labels_start)!=1:
-        labels_end = labels_start[1].split("\n\nData retrieval")
+        labels_end = labels_start[1].split(config.balise_split_end_label)
         labels_all = labels_end[0]
     else:
         labels_all = ""

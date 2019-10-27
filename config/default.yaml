@@ -4,8 +4,9 @@ path_label: ./config/
 path_poste: ./config/
 path_pays: ./config/
 name_path_results: ./results/
+uni: NMBU
 
-# CAS 1 : comparé excels
+# CAS 2 : comparé excels
 path_excel: ./results/
 name_path_results_excel: ./results/
 

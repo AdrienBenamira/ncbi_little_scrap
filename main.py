@@ -45,12 +45,12 @@ sheet3.write(0, 3, 'Mail dapres papier 1')
 sheet3.write(0, 4, 'Mail dapres papier 2')
 sheet3.write(0, 5, 'Poste')
 sheet3.write(0, 6, 'Label')
-sheet3.write(0, 7, 'Adresse dapres papier 1')
-sheet3.write(0, 8, 'Adresse dapres papier 2')
-sheet3.write(0, 9, 'Date dapres papier 1')
-sheet3.write(0, 10, 'Date dapres papier 2')
-sheet3.write(0, 11, 'ATTENTION A VERIFIER adresse 1')
-sheet3.write(0, 12, 'ATTENTION A VERIFIER adresse 2')
+sheet3.write(0, 7, 'Date dapres papier 1')
+sheet3.write(0, 8, 'Date dapres papier 2')
+sheet3.write(0, 9, 'ATTENTION A VERIFIER adresse 1')
+sheet3.write(0, 10, 'ATTENTION A VERIFIER adresse 2')
+sheet3.write(0, 11, 'Adresse dapres papier 1')
+sheet3.write(0, 12, 'Adresse dapres papier 2')
 
 sheet4 = wb.add_sheet('Collaborateur uniquement')
 sheet4.write(0, 0, 'Name and Surname ')
@@ -58,12 +58,12 @@ sheet4.write(0, 1, 'Name')
 sheet4.write(0, 2, 'Surname')
 sheet4.write(0, 3, 'MAIL dapres papier 1')
 sheet4.write(0, 4, 'MAIL dapres papier 2')
-sheet4.write(0, 5, 'ADRESSE dapres papier 1')
-sheet4.write(0, 6, 'ADRESSE dapres papier 2')
-sheet4.write(0, 7, 'PAYS dapres papier 1')
-sheet4.write(0, 8, 'PAYS dapres papier 2')
-sheet4.write(0, 9, 'DATE dapres papier 1')
-sheet4.write(0, 10, 'DATE dapres papier 2')
+sheet4.write(0, 5, 'PAYS dapres papier 1')
+sheet4.write(0, 6, 'PAYS dapres papier 2')
+sheet4.write(0, 7, 'DATE dapres papier 1')
+sheet4.write(0, 8, 'DATE dapres papier 2')
+sheet4.write(0, 9, 'ADRESSE dapres papier 1')
+sheet4.write(0, 10, 'ADRESSE dapres papier 2')
 
 
 offset_sheet3 = 0
@@ -96,8 +96,6 @@ for index_fiche in range(all_index_fiche):
             for l2 in liste_final_label:
                 if l2.upper()== l.upper():
                     compteur_label_2 += 1
-                else:
-                    all_labels_to_filter.append(l.upper())
         print("LABELS ", labels_all_liste_split2)
         if len(labels_all_liste_split2)!=0:
             if (compteur_label_2 / len(labels_all_liste_split2)) > config.threshold_label:
@@ -114,6 +112,9 @@ for index_fiche in range(all_index_fiche):
             compteur_del_label +=1
         # LES CHERCHEURS QUI NOUS INTERESSENT :
         if flag_copy:
+            for l in labels_all_liste_split2:
+                all_labels_to_filter.append(l.upper())
+
             offset_sheet3 +=1
             sheet3.write(offset_sheet3 + 1, 0, name_surname)
             sheet3.write(offset_sheet3 + 1, 1, name)
@@ -121,12 +122,13 @@ for index_fiche in range(all_index_fiche):
             sheet3.write(offset_sheet3 + 1, 5, poste)
             sheet3.write(offset_sheet3 + 1, 6,labels_all)
             time.sleep(config.temps_dodo)
-            dico_a_remplir = get_info_surname(name_surname, config.base_donne, config.threshold_paper)
+            uni = config.uni
+            dico_a_remplir = get_info_surname(name, uni, config.base_donne, config.threshold_paper)
             if len(list(dico_a_remplir.keys()))==0:
                 compteur_adresse_manquante +=1
                 print("RIEN DANS LA BASE DE DONNE, TODO : regarder celle européenne")
-                sheet3.write(offset_sheet3 + 1, 7 , "Adresse inconnue dans pubmed")
-                sheet3.write(offset_sheet3 + 1, 8 , "Adresse inconnue dans pubmed")
+                sheet3.write(offset_sheet3 + 1, 11 , "Adresse inconnue dans pubmed")
+                sheet3.write(offset_sheet3 + 1, 12 , "Adresse inconnue dans pubmed")
             for idx_key, val_key in enumerate(sorted(dico_a_remplir.keys())):
                 collaborateur = dico_a_remplir[val_key]["collaborateur"]
                 min_global = 100000
@@ -157,11 +159,11 @@ for index_fiche in range(all_index_fiche):
                         nom_a_tester_3_keep = nom_a_tester_3
                         mail_final = mail
                 print(min_global, nom_ref_3, nom_a_tester_3_keep, mail_final)
-                sheet3.write(offset_sheet3 + 1, 3+ idx_key,mail_final)
-                sheet3.write(offset_sheet3 + 1, 7 + idx_key,adresse_finale_chercheur)
-                sheet3.write(offset_sheet3 + 1, 9 + idx_key, dico_a_remplir[val_key]["date_sortie"])
+                sheet3.write(offset_sheet3 + 1, 3 + idx_key,mail_final)
+                sheet3.write(offset_sheet3 + 1, 11 + idx_key,adresse_finale_chercheur)
+                sheet3.write(offset_sheet3 + 1, 7 + idx_key, dico_a_remplir[val_key]["date_sortie"])
                 if min_global>1:
-                    sheet3.write(offset_sheet3 + 1, 11 + idx_key, "PB NOM! "+ str(nom_a_tester_3_keep))
+                    sheet3.write(offset_sheet3 + 1, 9 + idx_key, "PB NOM! "+ str(nom_a_tester_3_keep))
 
 
                 for idx_key2, val_key2 in enumerate(sorted(collaborateur.keys())):
@@ -177,14 +179,21 @@ for index_fiche in range(all_index_fiche):
                     #detect pays
                     for pays in liste_final_pays:
                         for infos_add in adresse_finale_chercheur2:
-                            infos_add2 = infos_add
+                            infos_add2 = infos_add.rstrip("\n")
                             if ',' in infos_add:
                                 infos_add2 = infos_add.replace(',', '')
                             if ';' in infos_add:
                                 infos_add2 = infos_add.replace(';', '')
-                            if pays.upper() == infos_add2.upper():
+                            if '.' in infos_add:
+                                infos_add2 = infos_add.replace('.', '')
+                            if '\n' in infos_add:
+                                infos_add2 = infos_add.replace('\n', '')
+                            #print(pays.upper() , infos_add2.upper(), pays.upper() == infos_add2.upper())
+                            if pays.upper() in infos_add2.rstrip('\n').upper():
                                 pays_keep = pays.upper()
                                 flag_copy_collab = True
+                                #print(flag_copy_collab)
+                    #print(val_key2, adresse_finale_chercheur2, infos_add2, flag_copy_collab)
                     if flag_copy_collab:
                         offset_sheet4 += 1
                         liste_pour_prenom = val_key2.split(' ')
@@ -194,9 +203,9 @@ for index_fiche in range(all_index_fiche):
                         sheet4.write(offset_sheet4, 1, liste_pour_prenom_2[0])
                         sheet4.write(offset_sheet4, 2, liste_pour_prenom_2[1])
                         sheet4.write(offset_sheet4, 3+idx_key,mail)
-                        sheet4.write(offset_sheet4, 5+idx_key,collaborateur[val_key2])
-                        sheet4.write(offset_sheet4, 7+idx_key,pays_keep)
-                        sheet4.write(offset_sheet4, 9+idx_key,dico_a_remplir[val_key]["date_sortie"])
+                        sheet4.write(offset_sheet4, 9+idx_key,collaborateur[val_key2])
+                        sheet4.write(offset_sheet4, 5+idx_key,pays_keep)
+                        sheet4.write(offset_sheet4, 7+idx_key,dico_a_remplir[val_key]["date_sortie"])
 
 
 

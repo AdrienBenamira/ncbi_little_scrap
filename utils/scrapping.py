@@ -49,8 +49,9 @@ def get_labels(config, fiche):
         labels_all = ""
     return labels_all
 
-def get_info_surname(surname, base_donne, threshold_paper):
-    name_api = surname.replace(' ', "+")
+def get_info_surname(name, uni, base_donne, threshold_paper):
+    name_api = name + "+"+uni.replace(' ', "+")
+    #print(name_api)
     response = requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db="+base_donne+"&term="+name_api+"&retmode=json")
     try:
         idx_to_test = response.json()["esearchresult"]["idlist"]

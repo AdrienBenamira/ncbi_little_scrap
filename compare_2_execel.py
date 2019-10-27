@@ -22,15 +22,15 @@ for index_key, key in enumerate(df.keys()):
     for index_line, line in enumerate(df[key]):
         sheet1.write(index_line+1, index_key, line)
 offset = len(df.keys())
-sheet1.write(0, offset+1, 'Adresse d après papier 1')
-sheet1.write(0, offset+2, 'Adresse d après papier 2')
-sheet1.write(0, offset+3, 'Date papier 1')
-sheet1.write(0, offset+4, 'Date papier 2')
-sheet1.write(0, offset+5, 'Estmation ville adresse 1')
-sheet1.write(0, offset+6, 'Estmation ville adresse 2')
-sheet1.write(0, offset+7, 'Estmation mail adresse 1')
-sheet1.write(0, offset+8, 'Estmation mail adresse 2')
 
+sheet1.write(0, offset+1, 'Date papier 1')
+sheet1.write(0, offset+2, 'Date papier 2')
+sheet1.write(0, offset+3, 'Estmation ville adresse 1')
+sheet1.write(0, offset+4, 'Estmation ville adresse 2')
+sheet1.write(0, offset+5, 'Estmation mail adresse 1')
+sheet1.write(0, offset+6, 'Estmation mail adresse 2')
+sheet1.write(0, offset+7, 'Adresse d après papier 1')
+sheet1.write(0, offset+8, 'Adresse d après papier 2')
 
 compteur_adresse_manquante = 0
 for index_df in range(len(df)):
@@ -53,7 +53,7 @@ for index_df in range(len(df)):
         compteur_adresse_manquante +=1
         continue
     uni = df["Organisation_Etablissement"][index_df]
-    dico_a_remplir = get_info_surname(name_surname, config.base_donne, config.threshold_paper)
+    dico_a_remplir = get_info_surname(name, uni, config.base_donne, config.threshold_paper)
     if len(list(dico_a_remplir.keys()))==0:
         compteur_adresse_manquante +=1
         print("RIEN DANS LA BASE DE DONNE, TODO : regarder celle européenne")
@@ -108,13 +108,13 @@ for index_df in range(len(df)):
 
 
 
-            sheet1.write(index_df + 1, offset + 1 + idx_key ,adresse_finale_chercheur)
-            sheet1.write(index_df + 1, offset + 3 + idx_key, dico_a_remplir[val_key]["date_sortie"])
+            sheet1.write(index_df + 1, offset + 7 + idx_key ,adresse_finale_chercheur)
+            sheet1.write(index_df + 1, offset + 1 + idx_key, dico_a_remplir[val_key]["date_sortie"])
             if flag_ville:
-                sheet1.write(index_df + 1, offset + 5 + idx_key, ville_estmate)
+                sheet1.write(index_df + 1, offset + 3 + idx_key, ville_estmate)
             else:
-                sheet1.write(index_df + 1, offset + 5 + idx_key, "ville différente")
-            sheet1.write(index_df + 1, offset + 7 + idx_key, mail)
+                sheet1.write(index_df + 1, offset + 3 + idx_key, "ville différente")
+            sheet1.write(index_df + 1, offset + 5 + idx_key, mail)
 
 
 print("NOMBRE D'ADRESSE MANQUANTES: " + str(compteur_adresse_manquante))

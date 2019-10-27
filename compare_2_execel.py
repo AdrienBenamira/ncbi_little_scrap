@@ -55,6 +55,8 @@ for index_df in range(len(df)):
     uni = df["Organisation_Etablissement"][index_df]
     dico_a_remplir = get_info_surname(name, uni, config.base_donne, config.threshold_paper)
     if len(list(dico_a_remplir.keys()))==0:
+        dico_a_remplir = get_info_surname(name, surname, config.base_donne, config.threshold_paper)
+    if len(list(dico_a_remplir.keys()))==0:
         compteur_adresse_manquante +=1
         print("RIEN DANS LA BASE DE DONNE, TODO : regarder celle européenne")
         sheet1.write(index_df + 1, offset + 1,"RIEN DANS LA BASE DE DONNE, TODO : regarder celle européenne")

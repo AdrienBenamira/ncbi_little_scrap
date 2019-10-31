@@ -5,11 +5,14 @@ path_poste: ./config/
 path_pays: ./config/
 name_path_results: ./results/
 uni: NMBU
+folder_all_files: ./results/ETH/ #fini par /
+folder_all_files_results: ./results/ETH/ #idem
 
 # CAS 2 : comparé excels
 path_excel: ./results/
 name_path_results_excel: ./results/
-
+folder_all_files_csv: ./ #fini par /
+folder_all_files_results_xls: ./ #idem
 
 # parametres
 base_donne: pubmed # base de données de recherche

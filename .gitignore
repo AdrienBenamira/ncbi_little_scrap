@@ -2,7 +2,7 @@ config/config.yaml
 config/*.txt
 results/
 utils/__pycache__/
-v
+__pycache__/
 inputs/
 outputs/
 parameters_to_configure/

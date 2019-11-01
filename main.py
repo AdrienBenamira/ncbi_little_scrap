@@ -168,6 +168,8 @@ def main_1(config):
                 #for l in labels_all_liste_split2:
                 all_labels_to_filter.append(df_2['clean_text'])
                 copy_paste_list = {}
+                mail1=""
+                mail2=""
                 offset_sheet3 +=1
                 sheet3.write(offset_sheet3 + 1, 0, name_surname)
                 sheet3.write(offset_sheet3 + 1, 1, name)
@@ -296,14 +298,16 @@ def main_1(config):
                         sheet5.write(offset_sheet5 + 1, 0, copy_paste_list["name_surname"])
                         sheet5.write(offset_sheet5 + 1, 1, copy_paste_list["name"])
                         sheet5.write(offset_sheet5 + 1, 2, copy_paste_list["surname"])
-                        sheet5.write(offset_sheet5 + 1, 3, copy_paste_list["0"]["mail_final"])
-                        sheet5.write(offset_sheet5 + 1, 4, copy_paste_list["1"]["mail_final"])
+                        if "0" in copy_paste_list.keys():
+                            sheet5.write(offset_sheet5 + 1, 3, copy_paste_list["0"]["mail_final"])
+                            sheet5.write(offset_sheet5 + 1, 7, copy_paste_list["0"]["date_sortie"])
+                            sheet5.write(offset_sheet5 + 1, 9, copy_paste_list["0"]["adresse_finale_chercheur"])
+                        if "1" in copy_paste_list.keys():
+                            sheet5.write(offset_sheet5 + 1, 4, copy_paste_list["1"]["mail_final"])
+                            sheet5.write(offset_sheet5 + 1, 8, copy_paste_list["1"]["date_sortie"])
+                            sheet5.write(offset_sheet5 + 1, 10, copy_paste_list["1"]["adresse_finale_chercheur"])
                         sheet5.write(offset_sheet5 + 1, 5, copy_paste_list["poste"])
                         sheet5.write(offset_sheet5 + 1, 6, copy_paste_list["labels_all"])
-                        sheet5.write(offset_sheet5 + 1, 7, copy_paste_list["0"]["date_sortie"])
-                        sheet5.write(offset_sheet5 + 1, 8, copy_paste_list["1"]["date_sortie"])
-                        sheet5.write(offset_sheet5 + 1, 9, copy_paste_list["0"]["adresse_finale_chercheur"])
-                        sheet5.write(offset_sheet5 + 1, 10, copy_paste_list["1"]["adresse_finale_chercheur"])
 
 
 

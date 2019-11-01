@@ -4,6 +4,7 @@ from xlwt import Workbook
 import requests
 import json
 import os
+import re
 
 def fiche_chercheur_i(config, file_contents, index):
     print()
@@ -122,3 +123,22 @@ def get_info_surname(name, uni, base_donne, threshold_paper):
                             final_nom_chercheur = name_chercheur.replace('"', '')
                             dico_surname[idx_to]["collaborateur"][final_nom_chercheur] = adresse.replace('"', '')
     return dico_surname
+
+def clean_up(df):
+    df['clean_text'] = df['text'].apply(lambda x: re.sub(r'http\S+', '', x))
+    punctuation = '!"#$%&()*+-/:;<=>?@[\\]^_`{|}~'
+
+    df['clean_text'] = df['clean_text'].apply(lambda x: ''.join(ch for ch in x if ch not in set(punctuation)))
+
+    # convert text to lowercase
+    df['clean_text'] = df['clean_text'].str.lower()
+
+    # remove numbers
+    df['clean_text'] = df['clean_text'].str.replace("[0-9]", " ")
+
+    # remove whitespaces
+    df['clean_text'] = df['clean_text'].apply(lambda x:' '.join(x.split()))
+
+    #df['clean_text'] = lemmatization(df['clean_text'])
+
+    return df

@@ -22,9 +22,9 @@ all_files = []
 # r=root, d=directories, f = files
 for r, d, f in os.walk(path):
     for file in f:
-        if '.csv' in file:
+        if '.txt' in file:
             all_files.append(os.path.join(r, file))
-
+print(all_files)
 
 for path in all_files:
     config.set_("path", path)

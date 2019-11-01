@@ -8,12 +8,31 @@ from utils import config
 from utils.scrapping import *
 import time
 
+from joblib import dump, load
 #import scholarly
+import pandas as pd
+
+from allennlp.modules.elmo import Elmo, batch_to_ids
+
+options_file = "https://allennlp.s3.amazonaws.com/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_options.json"
+weight_file = "https://allennlp.s3.amazonaws.com/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
+
+# Compute two different representation for each token.
+# Each representation is a linear weighted combination for the
+# 3 layers in ELMo (i.e., charcnn, the outputs of the two BiLSTM))
+elmo = Elmo(options_file, weight_file, 1, dropout=0)
+
+def embed(sent, elmo):
+    character_ids = batch_to_ids(sent)
+    embeddings = elmo(character_ids)
+    return embeddings["elmo_representations"][0].mean(1).detach().numpy()
 
 
 
 def main_1(config):
     start = time.time()
+    clf = load(config.machine_learning_path)
+
     with open(config.path) as file:
         file_contents = file.read().replace('\u2028',' ')
     with open(config.path_label) as file2:
@@ -65,7 +84,7 @@ def main_1(config):
     for index_fiche in range(all_index_fiche):
         fiche = fiche_chercheur_i(config, file_contents, index_fiche)
         print()
-        print(index_fiche, all_index_fiche, index_fiche/all_index_fiche)
+        print("AVANCEMENT", index_fiche, all_index_fiche, 100*index_fiche/all_index_fiche)
         if index_fiche == 15:
             wb.save(config.name_path_results)
         if len(fiche) !=0:
@@ -74,6 +93,22 @@ def main_1(config):
             print(name_surname, name, surname, poste)
             #démarrage filtrage label TODO : a mettre dans une fonction à part
             labels_all = get_labels(config, fiche)
+            print(labels_all)
+            df_a_tester = pd.DataFrame({"text": [labels_all]})
+            df_2 = clean_up(df_a_tester)
+            list_test = [x.split(" ") for x in df_2["clean_text"]]
+            elmo_test = embed(list_test, elmo)
+            elmo_test_new =elmo_test
+            preds_test = clf.predict(elmo_test_new)
+            sub = pd.DataFrame({'text':df_2['clean_text'], 'label':preds_test})
+            print("LABEL CLEAN : ")
+            print(sub)
+            print()
+            if sub["label"][0]==1:
+                #print(sub["text"][0], len(sub["text"][0]))
+                if sub["text"][0]!="":
+                    flag_copy = False
+            """
             labels_all_liste_split = labels_all.split('"' )
             labels_all_liste_split2 = [x for x in labels_all_liste_split if len(x) > 2]
             compteur_label_2 = 0
@@ -85,6 +120,7 @@ def main_1(config):
             if len(labels_all_liste_split2)!=0:
                 if (compteur_label_2 / len(labels_all_liste_split2)) > config.threshold_label:
                     flag_copy = False
+            """
             #démarrage filtrage poste TODO : a mettre dans une fonction à part
             poste_uuper = poste.upper()
             print("POSTE ", poste_uuper)
@@ -97,8 +133,8 @@ def main_1(config):
                 compteur_del_label +=1
             # LES CHERCHEURS QUI NOUS INTERESSENT :
             if flag_copy:
-                for l in labels_all_liste_split2:
-                    all_labels_to_filter.append(l.upper())
+                #for l in labels_all_liste_split2:
+                all_labels_to_filter.append(df_2['clean_text'])
                 offset_sheet3 +=1
                 sheet3.write(offset_sheet3 + 1, 0, name_surname)
                 sheet3.write(offset_sheet3 + 1, 1, name)

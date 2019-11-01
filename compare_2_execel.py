@@ -36,7 +36,7 @@ def main_1(config):
     compteur_adresse_manquante = 0
     for index_df in range(len(df)):
         print()
-        print(index_df, len(df), index_df/len(df))
+        print("AVANCEMENT", index_df, len(df), 100* index_df/len(df))
         print(df["Prénom"][index_df], df["Nom"][index_df])
         if index_df == 10:
             wb.save(config.name_path_results_excel)

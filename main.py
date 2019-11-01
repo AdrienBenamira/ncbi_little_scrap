@@ -62,6 +62,9 @@ def main_1(config):
     sheet3.write(0, 10, 'ATTENTION A VERIFIER adresse 2')
     sheet3.write(0, 11, 'Adresse dapres papier 1')
     sheet3.write(0, 12, 'Adresse dapres papier 2')
+
+
+
     sheet4 = wb.add_sheet('Collaborateur uniquement')
     sheet4.write(0, 0, 'Name and Surname ')
     sheet4.write(0, 1, 'Name')
@@ -74,8 +77,28 @@ def main_1(config):
     sheet4.write(0, 8, 'DATE dapres papier 2')
     sheet4.write(0, 9, 'ADRESSE dapres papier 1')
     sheet4.write(0, 10, 'ADRESSE dapres papier 2')
+
+    sheet5 = wb.add_sheet('MAMAN postprocessing')
+    sheet5.write(0, 0, 'Name and Surname')
+    sheet5.write(0, 1, 'Name')
+    sheet5.write(0, 2, 'Surname')
+    sheet5.write(0, 3, 'Mail dapres papier 1')
+    sheet5.write(0, 4, 'Mail dapres papier 2')
+    sheet5.write(0, 5, 'Poste')
+    sheet5.write(0, 6, 'Label')
+    sheet5.write(0, 7, 'Date dapres papier 1')
+    sheet5.write(0, 8, 'Date dapres papier 2')
+    sheet5.write(0, 9, 'ATTENTION A VERIFIER adresse 1')
+    sheet5.write(0, 10, 'ATTENTION A VERIFIER adresse 2')
+    sheet5.write(0, 11, 'Adresse dapres papier 1')
+    sheet5.write(0, 12, 'Adresse dapres papier 2')
+
+
+
     offset_sheet3 = 0
     offset_sheet4 = 0
+    offset_sheet5 = 0
+
     compteur_del_label = 1
     compteur_adresse_manquante = 1
     all_index_fiche = len(file_contents.split(str(config.mot_clef_coupure)))-1
@@ -89,6 +112,7 @@ def main_1(config):
             wb.save(config.name_path_results)
         if len(fiche) !=0:
             flag_copy = True
+            flag_copy_postprocessing_maman = True
             (name_surname, name, surname, poste) = get_name_surname_both_poste(fiche)
             print(name_surname, name, surname, poste)
             #démarrage filtrage label TODO : a mettre dans une fonction à part
@@ -108,6 +132,8 @@ def main_1(config):
                 #print(sub["text"][0], len(sub["text"][0]))
                 if sub["text"][0]!="":
                     flag_copy = False
+                else:
+                    flag_copy_postprocessing_maman= False
             """
             labels_all_liste_split = labels_all.split('"' )
             labels_all_liste_split2 = [x for x in labels_all_liste_split if len(x) > 2]
@@ -128,19 +154,33 @@ def main_1(config):
                 #print(poste_del, poste_uuper, poste_del in poste_uuper)
                 if poste_del in poste_uuper:
                     flag_copy = False
+
+            # LES CHERCHEURS QUI NOUS INTERESSENT :
+            if config.postprocessing_maman:
+                if not flag_copy_postprocessing_maman:
+                    flag_copy = False
+
             print("A GARDER : ", flag_copy)
             if not flag_copy:
                 compteur_del_label +=1
-            # LES CHERCHEURS QUI NOUS INTERESSENT :
+
             if flag_copy:
                 #for l in labels_all_liste_split2:
                 all_labels_to_filter.append(df_2['clean_text'])
+                copy_paste_list = {}
                 offset_sheet3 +=1
                 sheet3.write(offset_sheet3 + 1, 0, name_surname)
                 sheet3.write(offset_sheet3 + 1, 1, name)
                 sheet3.write(offset_sheet3 + 1, 2, surname)
                 sheet3.write(offset_sheet3 + 1, 5, poste)
                 sheet3.write(offset_sheet3 + 1, 6,labels_all)
+                copy_paste_list["name_surname"] = name_surname
+                copy_paste_list["name"] = name
+                copy_paste_list["surname"] = surname
+                copy_paste_list["poste"] = poste
+                copy_paste_list["labels_all"] = labels_all
+
+
                 time.sleep(config.temps_dodo)
                 uni = config.uni
                 dico_a_remplir = get_info_surname(name, uni, config.base_donne, config.threshold_paper)
@@ -179,13 +219,32 @@ def main_1(config):
                             min_global = min(distance1f, distance2f)
                             adresse_finale_chercheur = collaborateur[val_key2]
                             nom_a_tester_3_keep = nom_a_tester_3
-                            mail_final = mail
+                            mail_clean1 = config.fin_adresse_mail + "."
+                            mail_clean2 = config.fin_adresse_mail + ";"
+
+                            mail_final = mail.replace(mail_clean1,config.fin_adresse_mail).replace(mail_clean2, config.fin_adresse_mail)
                     print(min_global, nom_ref_3, nom_a_tester_3_keep, mail_final)
                     sheet3.write(offset_sheet3 + 1, 3 + idx_key,mail_final)
                     sheet3.write(offset_sheet3 + 1, 11 + idx_key,adresse_finale_chercheur)
                     sheet3.write(offset_sheet3 + 1, 7 + idx_key, dico_a_remplir[val_key]["date_sortie"])
+                    copy_paste_list[str(idx_key)] = {}
+                    copy_paste_list[str(idx_key)]["mail_final"] = mail_final
+                    copy_paste_list[str(idx_key)]["adresse_finale_chercheur"] = adresse_finale_chercheur
+                    copy_paste_list[str(idx_key)]["date_sortie"] = dico_a_remplir[val_key]["date_sortie"]
+
+
+                    if idx_key==0:
+                        mail1= mail_final
+                    else:
+                        mail2=mail_final
                     if min_global>1:
                         sheet3.write(offset_sheet3 + 1, 9 + idx_key, "PB NOM! "+ str(nom_a_tester_3_keep))
+                        copy_paste_list[str(idx_key)]["PB_nom"] =  "PB NOM! "+ str(nom_a_tester_3_keep)
+                    else:
+                        copy_paste_list[str(idx_key)]["PB_nom"] =  " "
+
+
+
                     for idx_key2, val_key2 in enumerate(sorted(collaborateur.keys())):
                         #copy paste collaborateur
                         flag_copy_collab = False
@@ -220,11 +279,40 @@ def main_1(config):
                             liste_pour_prenom_2 = [x for x in liste_pour_prenom if len(x)!=0]
                             sheet4.write(offset_sheet4, 0, val_key2)
                             sheet4.write(offset_sheet4, 1, liste_pour_prenom_2[0])
-                            sheet4.write(offset_sheet4, 2, liste_pour_prenom_2[1])
+                            if len(liste_pour_prenom_2)>0:
+                                sheet4.write(offset_sheet4, 2, liste_pour_prenom_2[1])
                             sheet4.write(offset_sheet4, 3+idx_key,mail)
                             sheet4.write(offset_sheet4, 9+idx_key,collaborateur[val_key2])
                             sheet4.write(offset_sheet4, 5+idx_key,pays_keep)
                             sheet4.write(offset_sheet4, 7+idx_key,dico_a_remplir[val_key]["date_sortie"])
+
+
+                if config.postprocessing_maman:
+                    valid = False
+                    if config.fin_adresse_mail in mail1 or config.fin_adresse_mail in mail2:
+                        valid = True
+                    if valid:
+                        offset_sheet5 +=1
+                        sheet5.write(offset_sheet5 + 1, 0, copy_paste_list["name_surname"])
+                        sheet5.write(offset_sheet5 + 1, 1, copy_paste_list["name"])
+                        sheet5.write(offset_sheet5 + 1, 2, copy_paste_list["surname"])
+                        sheet5.write(offset_sheet5 + 1, 3, copy_paste_list["0"]["mail_final"])
+                        sheet5.write(offset_sheet5 + 1, 4, copy_paste_list["1"]["mail_final"])
+                        sheet5.write(offset_sheet5 + 1, 5, copy_paste_list["poste"])
+                        sheet5.write(offset_sheet5 + 1, 6, copy_paste_list["labels_all"])
+                        sheet5.write(offset_sheet5 + 1, 7, copy_paste_list["0"]["date_sortie"])
+                        sheet5.write(offset_sheet5 + 1, 8, copy_paste_list["1"]["date_sortie"])
+                        sheet5.write(offset_sheet5 + 1, 9, copy_paste_list["0"]["adresse_finale_chercheur"])
+                        sheet5.write(offset_sheet5 + 1, 10, copy_paste_list["1"]["adresse_finale_chercheur"])
+
+
+
+                print()
+                print("NOMBRE DE CHERCHEURS DE L'UNIVERSITE : ", offset_sheet3)
+                print("NOMBRE DE Collaborateurs DE L'UNIVERSITE : ", offset_sheet4)
+                print("NOMBRE DE CHERCHEURS apres traitement maman : ", offset_sheet5)
+                print()
+
     values, counts = np.unique(all_labels_to_filter, return_counts=True)
     sheet2 = wb.add_sheet('Labels')
     sheet2.write(0, 0, 'Name label')

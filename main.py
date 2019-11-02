@@ -221,10 +221,10 @@ def main_1(config):
                             min_global = min(distance1f, distance2f)
                             adresse_finale_chercheur = collaborateur[val_key2]
                             nom_a_tester_3_keep = nom_a_tester_3
-                            mail_clean1 = config.fin_adresse_mail + "."
-                            mail_clean2 = config.fin_adresse_mail + ";"
+                            #mail_clean1 = config.fin_adresse_mail + "."
+                            #mail_clean2 = config.fin_adresse_mail + ";"
 
-                            mail_final = mail.replace(mail_clean1,config.fin_adresse_mail).replace(mail_clean2, config.fin_adresse_mail)
+                            mail_final = mail#.replace(mail_clean1,config.fin_adresse_mail).replace(mail_clean2, config.fin_adresse_mail)
                     print(min_global, nom_ref_3, nom_a_tester_3_keep, mail_final)
                     sheet3.write(offset_sheet3 + 1, 3 + idx_key,mail_final)
                     sheet3.write(offset_sheet3 + 1, 11 + idx_key,adresse_finale_chercheur)
@@ -291,8 +291,10 @@ def main_1(config):
 
                 if config.postprocessing_maman:
                     valid = False
-                    if config.fin_adresse_mail in mail1 or config.fin_adresse_mail in mail2:
+
+                    if "@" in mail1 or "@" in mail2:
                         valid = True
+
                     if valid:
                         offset_sheet5 +=1
                         sheet5.write(offset_sheet5 + 1, 0, copy_paste_list["name_surname"])
@@ -327,13 +329,16 @@ def main_1(config):
         sheet2.write(index_val+1, 1, int(cou))
     wb.save(config.name_path_results)
     print()
+    print("---"*50)
     print()
     print("NOMBRE DE FICHES SUPPRIMEES: " + str(compteur_del_label))
     print()
     print("NOMBRE D'ADRESSE MANQUANTES: " + str(compteur_adresse_manquante))
     print()
+    print("FIN, TEMPS OPERATION (s): ", time.time() - start)
+    print("---"*50)
     print()
-    print("FIN, TIME : ", time.time() - start)
+
 
 if __name__ == "__main__":
     # execute only if run as a script

@@ -110,12 +110,15 @@ def main_1(config):
                     sheet1.write(index_df + 1, offset + 3 + idx_key, "ville différente")
                 sheet1.write(index_df + 1, offset + 5 + idx_key, mail)
     print()
+    print("---"*50)
     print()
     print("NOMBRE D'ADRESSE MANQUANTES: " + str(compteur_adresse_manquante))
     wb.save(config.name_path_results_excel)
     print()
-    print()
     print("FIN, TIME : ", time.time() - start)
+    print()
+    print("---"*50)
+    print()
 
 if __name__ == "__main__":
     # execute only if run as a script
